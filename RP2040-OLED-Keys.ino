@@ -8,6 +8,7 @@
 #include <Arduino.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include "button.h"
 
 #define SSD1306_128X64
 // #define SSD1306_128X32
@@ -33,39 +34,34 @@
 
 Adafruit_SSD1306 display(DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
+Button button1(BUTTON1_PIN);
+Button button2(BUTTON2_PIN);
+
 int patternIndex = 0;
 
 void setup() {
-  pinMode(BUTTON1_PIN, INPUT_PULLUP);
-  pinMode(BUTTON2_PIN, INPUT_PULLUP);
+  button1.begin();
+  button2.begin();
 }
 
 void loop() {
+  button1.update();
+  button2.update();
+
+  if (button1.isClicked()) {
+    patternIndex = (patternIndex - 1 + PATTERN_COUNT) % PATTERN_COUNT;
+  }
+  if (button2.isClicked()) {
+    patternIndex = (patternIndex + 1) % PATTERN_COUNT;
+  }
+
   switch (patternIndex) {
     case 0: displayLogo(); break;
     case 1: displayHello(); break;
     case 2: displayGraphics(); break;
   }
 
-  while (digitalRead(BUTTON1_PIN) == LOW || digitalRead(BUTTON2_PIN) == LOW) { delay(10); }
-
-  while (true) {
-    if (digitalRead(BUTTON1_PIN) == LOW) {
-      delay(50);
-      if (digitalRead(BUTTON1_PIN) == LOW) {
-        patternIndex = (patternIndex - 1 + PATTERN_COUNT) % PATTERN_COUNT;
-        break;
-      }
-    }
-    if (digitalRead(BUTTON2_PIN) == LOW) {
-      delay(50);
-      if (digitalRead(BUTTON2_PIN) == LOW) {
-        patternIndex = (patternIndex + 1) % PATTERN_COUNT;
-        break;
-      }
-    }
-    delay(10);
-  }
+  delay(10);
 }
 
 void displayLogo() {
