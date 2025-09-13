@@ -30,7 +30,7 @@
 #error "No display size defined"
 #endif
 
-#define PATTERN_COUNT 4
+#define PATTERN_COUNT 3
 
 Adafruit_SSD1306 display(DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
@@ -38,6 +38,7 @@ Button button1(BUTTON1_PIN);
 Button button2(BUTTON2_PIN);
 
 int patternIndex = 0;
+int lastPatternIndex = -1;
 
 void setup() {
   button1.begin();
@@ -55,10 +56,13 @@ void loop() {
     patternIndex = (patternIndex + 1) % PATTERN_COUNT;
   }
 
-  switch (patternIndex) {
-    case 0: displayLogo(); break;
-    case 1: displayHello(); break;
-    case 2: displayGraphics(); break;
+  if (patternIndex != lastPatternIndex) {
+    switch (patternIndex) {
+      case 0: displayLogo(); break;
+      case 1: displayHello(); break;
+      case 2: displayGraphics(); break;
+    }
+    lastPatternIndex = patternIndex;
   }
 
   delay(10);
